@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmation de réservation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      display: flex;
+      gap: 20px;
+      max-width: 1200px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .left, .right {
+      flex: 1;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .info-block {
+      margin-bottom: 20px;
+    }
+
+    .info-block p {
+      margin: 6px 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .total-box {
+      background: #f0f8ff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .total-box p {
+      margin: 5px 0;
+    }
+
+    .highlight {
+      font-size: 22px;
+      color: #d80000;
+      font-weight: bold;
+    }
+
+    button {
+      background-color: #0071c2;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .checkbox-group {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Colonne gauche -->
+  <div class="left">
+    <h2>Détails de votre réservation</h2>
+    <div class="info-block">
+      <p><strong>Arrivée :</strong> dim. 18 mai 2025 — 14:00 à 23:00</p>
+      <p><strong>Départ :</strong> mar. 20 mai 2025 — 08:00 à 11:00</p>
+      <p><strong>Durée :</strong> 2 nuits</p>
+      <p><strong>Chambre :</strong> 1 chambre pour 2 adultes</p>
+      <a href="#">Modifier la sélection</a>
+    </div>
+
+    <div class="total-box">
+      <p>Tarif initial : <del>MAD 3 103</del></p>
+      <p>Offre à durée limitée : <strong>- MAD 1 241,03</strong></p>
+      <hr>
+      <p>Montant <span class="highlight">MAD 1 861,54</span></p>
+    </div>
+  </div>
+
+  <!-- Colonne droite -->
+  <div class="right">
+    <h2>Vos informations</h2>
+
+    <form onsubmit="submitForm(event)">
+      <div class="form-group">
+        <label>Adresse e-mail *</label>
+        <input type="email" required>
+      </div>
+
+      <div class="form-group">
+        <label>Adresse *</label>
+        <input type="text" required>
+      </div>
+
+      <div class="form-group">
+        <label>Ville *</label>
+        <input type="text" required>
+      </div>
+
+      <div class="form-group">
+        <label>Code postal</label>
+        <input type="text">
+      </div>
+
+      <div class="form-group">
+        <label>Pays/Région</label>
+        <select required>
+          <option value="Maroc">Maroc</option>
+          <option value="France">France</option>
+          <option value="Belgique">Belgique</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Numéro de téléphone *</label>
+        <input type="tel" required placeholder="+212">
+      </div>
+
+      <div class="checkbox-group">
+        <label><input type="checkbox" checked> Oui, je souhaite recevoir une confirmation numérique gratuite</label>
+      </div>
+
+      <button type="submit">Confirmer la réservation</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function submitForm(event) {
+    event.preventDefault();
+    alert("Réservation confirmée ! Vous recevrez un e-mail de confirmation.");
+    // Tu peux aussi envoyer les données vers un backend ici
+  }
+</script>
+
+</body>
+</html>

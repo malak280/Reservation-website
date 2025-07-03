@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Connexion - OCP reservation</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+      width: 320px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #003b95;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #003b95;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #003b95;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #002f70;
+    }
+    .error-message {
+      color: red;
+      margin-bottom: 15px;
+      text-align: center;
+      min-height: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Connexion</h2>
+    <form id="loginForm">
+      <label for="username">Nom d'utilisateur</label>
+      <input type="text" id="username" name="username" placeholder="Votre nom d'utilisateur" required />
+      
+      <label for="password">Mot de passe</label>
+      <input type="password" id="password" name="password" placeholder="Votre mot de passe" required />
+      
+      <div class="error-message" id="error"></div>
+      
+      <button type="submit">Se connecter</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorDiv = document.getElementById('error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.textContent = '';
+
+      const username = form.username.value.trim();
+      const password = form.password.value.trim();
+
+      if (!username || !password) {
+        errorDiv.textContent = 'Veuillez remplir tous les champs.';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5001/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        if (!response.ok) {
+          throw new Error('Nom d’utilisateur ou mot de passe incorrect');
+        }
+
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+
+        // Rediriger vers la page d’accueil ou dashboard
+        window.location.href = 'index.html'; 
+      } catch (err) {
+        errorDiv.textContent = err.message || 'Erreur lors de la connexion.';
+      }
+    });
+  </script>
+</body>
+</html>

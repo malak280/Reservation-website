@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Résultats de recherche - Booking Clone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .top-bar {
+      background-color: #003b95;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .top-bar button {
+      margin-left: 10px;
+      padding: 6px 12px;
+    }
+
+    .search-summary {
+      background-color: #febb02;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .search-summary input[type="text"],
+    .search-summary input[type="date"],
+    .search-summary select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      min-width: 130px;
+    }
+
+    .search-summary button {
+      background-color: #0071c2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .results {
+      display: flex;
+      padding: 20px;
+    }
+
+    .filter-section {
+      width: 250px;
+      margin-right: 20px;
+    }
+
+    .map-box {
+      background-color: #e7f0ff;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    .map-box strong {
+      display: inline-block;
+      margin-bottom: 5px;
+    }
+
+    .map-box img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+
+    .hotel-list {
+      flex: 1;
+    }
+
+    .hotel-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .hotel-card img {
+      width: 200px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .hotel-info {
+      flex: 1;
+    }
+
+    .hotel-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .hotel-card button {
+      background-color: #0071c2;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div>OCP reservation</div>
+    <div>
+      <button>S'inscrire</button>
+      <button>Se connecter</button>
+    </div>
+  </div>
+
+  <div class="search-summary">
+    <input type="text" id="destination" placeholder="Destination">
+    <input type="date" id="date-arrivee">
+    <input type="date" id="date-depart">
+
+    <label>Adultes :
+      <select id="adults">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>+</option>
+      </select>
+    </label>
+
+    <label>Enfants :
+      <select id="children">
+        <option>0</option>
+        <option>1</option>
+        <option>2</option>
+        <option>+</option>
+      </select>
+    </label>
+
+    <label>Chambres :
+      <select id="rooms">
+        <option>1</option>
+        <option>2</option>
+        <option>+</option>
+      </select>
+    </label>
+
+    <button onclick="searchHotels()">Rechercher</button>
+  </div>
+
+  <div class="results">
+    <div class="filter-section">
+      <div class="map-box">
+        <strong>Voir sur la carte</strong>
+        <img src="https://via.placeholder.com/250x150?text=Carte" alt="Carte">
+      </div>
+      <div>
+        <h3>Filtrer par :</h3>
+        <label><input type="checkbox"> 5 étoiles</label><br>
+        <label><input type="checkbox"> Piscine</label><br>
+        <label><input type="checkbox"> Hôtel</label><br>
+        <label><input type="checkbox"> Fabuleux : 9+</label>
+      </div>
+    </div>
+
+    <div class="hotel-list" id="hotel-list"></div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const ville = params.get("ville") || "";
+    const arrivee = params.get("arrivee") || "";
+    const depart = params.get("depart") || "";
+
+    document.getElementById("destination").value = decodeURIComponent(ville);
+    document.getElementById("date-arrivee").value = arrivee;
+    document.getElementById("date-depart").value = depart;
+
+    async function searchHotels() {
+      const listContainer = document.getElementById('hotel-list');
+      listContainer.innerHTML = '';
+
+      const adults = document.getElementById('adults').value;
+      const children = document.getElementById('children').value;
+      const rooms = document.getElementById('rooms').value;
+      const destination = document.getElementById('destination').value;
+
+      try {
+        const response = await fetch(`http://localhost:5001/hotel?adults=${adults}&children=${children}&rooms=${rooms}`);
+        const hotels = await response.json();
+
+        const hotelsFiltres = hotels.filter(h =>
+          h.ville.toLowerCase().includes(destination.toLowerCase())
+        );
+
+        if (hotelsFiltres.length === 0) {
+          listContainer.innerHTML = '<p>Aucun hôtel trouvé.</p>';
+          return;
+        }
+
+        hotelsFiltres.forEach(hotel => {
+          const imageUrl = hotel.imageUrl && hotel.imageUrl.trim() !== ''
+            ? hotel.imageUrl
+            : 'https://via.placeholder.com/200x130?text=Image+non+dispo';
+
+          const card = document.createElement('div');
+          card.className = 'hotel-card';
+          card.innerHTML = `
+            <img src="${imageUrl}" alt="${hotel.nom}" />
+            <div class="hotel-info">
+              <div class="hotel-title">${hotel.nom}</div>
+              <p>Ville : ${hotel.ville}</p>
+              <p>Adresse : ${hotel.adresse}</p>
+              <p>Période dispo : ${hotel.periodedispo}</p>
+              <p>Prix : ${hotel.prix} MAD</p>
+            </div>
+            <div>
+              <button onclick="window.location.href='reservation.html?hotel=${encodeURIComponent(hotel.nom)}&ville=${encodeURIComponent(hotel.ville)}&prix=${hotel.prix}'">Voir les tarifs</button>
+            </div>
+          `;
+          listContainer.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error('Erreur lors du chargement des hôtels :', error);
+        listContainer.innerHTML = '<p>Erreur lors de la récupération des hôtels.</p>';
+      }
+    }
+
+    window.onload = searchHotels;
+  </script>
+</body>
+</html>
